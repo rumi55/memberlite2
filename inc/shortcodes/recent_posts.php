@@ -33,7 +33,7 @@ function pmprot_recent_posts_shortcode_handler($atts, $content=null, $code="") {
 	if(!empty($subtitle))
 		$r .= '<p class="subtitle">' . $subtitle . '</p>';
 	
-	$r .= '<div class="container12"><div class="row">';
+	$r .= '<div class="row">';
 	
 	$count = 0;
 	
@@ -41,16 +41,7 @@ function pmprot_recent_posts_shortcode_handler($atts, $content=null, $code="") {
 	if ( have_posts() ) : while ( have_posts() ) : the_post();	
 		$count++;
 
-		$r .= '<div class="column4';
-		if($count == '1')
-		{
-			$r .= ' alpha';
-		}
-		if($count == '4')
-		{
-			$r .= ' omega';
-		}
-		$r .= '">';
+		$r .= '<div class="medium-4 columns">';
 
 		$r .= '<article id="post-' . get_the_ID() . '" class="' . implode(" ", get_post_class()) . '">';
 
@@ -75,7 +66,7 @@ function pmprot_recent_posts_shortcode_handler($atts, $content=null, $code="") {
 			$r .= '';
 		
 		$r .= '<p><a class="more-link" href="' . get_permalink() . '" rel="permalink">';
-		$r .= __('Continue Reading','memberlite2');
+		$r .= __('Continue Reading','memberlite');
 		$r .= '</a></p>';
 									
 		$r .= '</article>';
@@ -83,7 +74,7 @@ function pmprot_recent_posts_shortcode_handler($atts, $content=null, $code="") {
 			
 	endwhile; endif;
 	
-	$r .= '</div></div> <!-- .row -->';
+	$r .= '</div><!-- .row -->';
 	$r .= '</div> <!-- .pmprot_recent_posts -->';
 	
 	//Reset Query

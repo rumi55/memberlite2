@@ -23,73 +23,82 @@
 	<nav id="mobile-navigation" class="mobile-navigation" role="navigation">
 		<?php dynamic_sidebar('sidebar-5'); ?>	
 	</nav>
-	<a class="skip-link screen-reader-text" href="#content"><?php _e( 'Skip to content', 'memberlite2' ); ?></a>
-    <header id="masthead" class="container12 site-header" role="banner">
+	<a class="skip-link screen-reader-text" href="#content"><?php _e( 'Skip to content', 'memberlite' ); ?></a>
+    <header id="masthead" class="site-header" role="banner">
 		<div class="row">
-			<div class="column4 site-branding">
+			<div class="medium-4 columns site-branding">
 				<button class="menu-toggle"><i class="fa fa-bars"></i></button>
 				<h1 class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></h1>
 				<span class="site-description"><?php bloginfo( 'description' ); ?></span>
 			</div><!-- .column4 -->
-			<div class="column8 header-right">
+			<div class="medium-8 columns header-right">
 				<div id="meta-member">
-                <aside class="widget">
-                <?php 
-                    global $current_user, $pmpro_pages;
-                    if($user_ID)
-                    { 
-                        ?>				
-                        <span class="user">Welcome, <?php echo preg_replace("/\@.*/", "", $current_user->display_name)?></span>
-                        <?php
-                            if(!empty($pmpro_pages))
-                            {
-                                $account_page = get_post($pmpro_pages['account']);
-                                ?>
-                                <a href="<?php echo pmpro_url("account"); ?>"><?php echo $account_page->post_title; ?></a>
-                                <?php
-                            }
-                            else
-                            {
-                                ?>
-                                <a href="<?php echo admin_url("profile.php"); ?>"><?php _e( 'Profile', 'memberlite2' ); ?></a>
-                                <?php
-                            }
-                        ?>
-                        <a href="<?php echo wp_logout_url( ); ?>"><?php _e( 'Log Out', 'memberlite2' ); ?></a>
-                        <?php 
-                    } 
-                    else 
-                    { 
-                        ?>
-                        <a href="<?php echo wp_login_url(); ?>"><?php _e( 'Log In', 'memberlite2' ); ?></a>
-                        <a href="<?php echo wp_registration_url(); ?>"><?php _e( 'Register', 'memberlite2' ); ?></a>
-                        <?php
-                    } 
-                ?>
-                </aside>
-                </div>
-                <nav id="meta-navigation" class="meta-navigation" role="navigation">
-					<?php wp_nav_menu( array( 'theme_location' => 'meta' ) ); ?>
-				</nav><!-- #meta-navigation -->
+					<aside class="widget">
+					<?php 
+						global $current_user, $pmpro_pages;
+						if($user_ID)
+						{ 
+							?>				
+							<span class="user">Welcome, <?php echo preg_replace("/\@.*/", "", $current_user->display_name)?></span>
+							<?php
+								if(!empty($pmpro_pages))
+								{
+									$account_page = get_post($pmpro_pages['account']);
+									?>
+									<a href="<?php echo pmpro_url("account"); ?>"><?php echo $account_page->post_title; ?></a>
+									<?php
+								}
+								else
+								{
+									?>
+									<a href="<?php echo admin_url("profile.php"); ?>"><?php _e( 'Profile', 'memberlite' ); ?></a>
+									<?php
+								}
+							?>
+							<a href="<?php echo wp_logout_url( ); ?>"><?php _e( 'Log Out', 'memberlite' ); ?></a>
+							<?php 
+						} 
+						else 
+						{ 
+							?>
+							<a href="<?php echo wp_login_url(); ?>"><?php _e( 'Log In', 'memberlite' ); ?></a>
+							<a href="<?php echo wp_registration_url(); ?>"><?php _e( 'Register', 'memberlite' ); ?></a>
+							<?php
+						} 
+					?>
+					</aside>
+				</div><!-- #meta-member -->
+				<?php 	
+					$meta_defaults = array(
+						'theme_location' => 'meta',
+						'container' => 'nav',
+						'container_id' => 'meta-navigation',
+						'container_class' => 'meta-navigation',
+						'fallback_cb' => false
+					);					
+					wp_nav_menu( $meta_defaults ); 
+				?>
 				<?php dynamic_sidebar('sidebar-3'); ?>
-            </div><!-- .column8 -->
+			</div><!-- .column8 -->
 		</div><!-- .row -->
 	</header><!-- #masthead -->
-	<nav id="site-navigation" class="main-navigation" role="navigation">
-		<div class="container12">
-			<div class="row">
-				<div class="column12">
-					<?php wp_nav_menu( array( 'theme_location' => 'primary' ) ); ?>
-				</div><!-- .column12 -->
-			</div><!-- .row -->
-		</div><!-- .container12 -->
+	<nav id="site-navigation">
+	<?php 
+		$primary_defaults = array(
+			'theme_location' => 'primary',
+			'container' => 'div',
+			'container_class' => 'main-navigation row',
+			'menu_class' => 'menu large-12 columns',
+			'fallback_cb' => false,					
+		);				
+		wp_nav_menu($primary_defaults); 				
+	?>
 	</nav><!-- #site-navigation -->
-	
 	<div id="content" class="site-content">
 		<?php if(!is_front_page()) { ?>
             <?php		
                 global $post;
-                if((is_singular('post') || (is_page()) && !is_page_template( 'templates/landing-page.php' )) && memberlite2_getPostThumbnailWidth($post->ID) > '740')
+                if((is_singular('post') || (is_page()) && !is_page_template( 'templates/landing-page.php' )) && memberlite_getPostThumbnailWidth($post->ID) > '740')
                 {
                     //get src of thumbnail
                     $thumbnail = wp_get_attachment_image_src( get_post_thumbnail_id($post->ID), 'full');			
@@ -99,16 +108,14 @@
                 }
             ?>
             <header class="masthead">
-				<div class="container12">
-					<div class="row">
-						<div class="column12">
-							<?php memberlite2_page_title(); ?>
-						</div>
-					</div><!-- .row -->
-				</div>
+				<div class="row">
+					<div class="large-12 columns">
+						<?php memberlite_page_title(); ?>
+					</div>
+				</div><!-- .row -->
 			</header><!-- .masthead -->
             <?php
-                if((is_singular('post') || (is_page()) && !is_page_template( 'templates/landing-page.php' )) && memberlite2_getPostThumbnailWidth($post->ID) > '740')
+                if((is_singular('post') || (is_page()) && !is_page_template( 'templates/landing-page.php' )) && memberlite_getPostThumbnailWidth($post->ID) > '740')
                 {
                     ?>
                     </div> <!-- .masthead-banner -->
@@ -116,8 +123,7 @@
                 }
             ?>
 			<?php if(!is_page_template( 'templates/fluid-width.php' )) { ?>
-            <div class="container12">
 				<div class="row">
-            <?php } ?>
+			<?php } ?>
 		<?php } ?>
 	

@@ -7,14 +7,14 @@
 
 get_header(); ?>
 
-	<div id="primary" class="column8 content-area">
+	<div id="primary" class="medium-8 columns content-area">
 		<main id="main" class="site-main" role="main">
 
 		<?php while ( have_posts() ) : the_post(); ?>
 
 			<?php get_template_part( 'content', 'single' ); ?>
 
-			<?php memberlite2_post_nav(); ?>
+			<?php memberlite_post_nav(); ?>
 
 			<?php
 				// If comments are open or we have at least one comment, load up the comment template

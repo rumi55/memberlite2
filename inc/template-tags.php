@@ -7,26 +7,26 @@
  * @package Member Lite 2.0
  */
 
-if ( ! function_exists( 'memberlite2_paging_nav' ) ) :
+if ( ! function_exists( 'memberlite_paging_nav' ) ) :
 /**
  * Display navigation to next/previous set of posts when applicable.
  */
-function memberlite2_paging_nav() {
+function memberlite_paging_nav() {
 	// Don't print empty markup if there's only one page.
 	if ( $GLOBALS['wp_query']->max_num_pages < 2 ) {
 		return;
 	}
 	?>
 	<nav class="navigation paging-navigation" role="navigation">
-		<h1 class="screen-reader-text"><?php _e( 'Posts navigation', 'memberlite2' ); ?></h1>
+		<h1 class="screen-reader-text"><?php _e( 'Posts navigation', 'memberlite' ); ?></h1>
 		<div class="nav-links">
 
 			<?php if ( get_next_posts_link() ) : ?>
-			<div class="nav-previous"><?php next_posts_link( __( '<span class="meta-nav">&larr;</span> Older posts', 'memberlite2' ) ); ?></div>
+			<div class="nav-previous"><?php next_posts_link( __( '<span class="meta-nav">&larr;</span> Older posts', 'memberlite' ) ); ?></div>
 			<?php endif; ?>
 
 			<?php if ( get_previous_posts_link() ) : ?>
-			<div class="nav-next"><?php previous_posts_link( __( 'Newer posts <span class="meta-nav">&rarr;</span>', 'memberlite2' ) ); ?></div>
+			<div class="nav-next"><?php previous_posts_link( __( 'Newer posts <span class="meta-nav">&rarr;</span>', 'memberlite' ) ); ?></div>
 			<?php endif; ?>
 
 		</div><!-- .nav-links -->
@@ -35,11 +35,11 @@ function memberlite2_paging_nav() {
 }
 endif;
 
-if ( ! function_exists( 'memberlite2_post_nav' ) ) :
+if ( ! function_exists( 'memberlite_post_nav' ) ) :
 /**
  * Display navigation to next/previous post when applicable.
  */
-function memberlite2_post_nav() {
+function memberlite_post_nav() {
 	// Don't print empty markup if there's nowhere to navigate.
 	$previous = ( is_attachment() ) ? get_post( get_post()->post_parent ) : get_adjacent_post( false, '', true );
 	$next     = get_adjacent_post( false, '', false );
@@ -49,11 +49,11 @@ function memberlite2_post_nav() {
 	}
 	?>
 	<nav class="navigation post-navigation" role="navigation">
-		<h1 class="screen-reader-text"><?php _e( 'Post navigation', 'memberlite2' ); ?></h1>
+		<h1 class="screen-reader-text"><?php _e( 'Post navigation', 'memberlite' ); ?></h1>
 		<div class="nav-links">
 			<?php
-				previous_post_link( '<div class="nav-previous">%link</div>', _x( '<span class="meta-nav">&larr;</span> %title', 'Previous post link', 'memberlite2' ) );
-				next_post_link(     '<div class="nav-next">%link</div>',     _x( '%title <span class="meta-nav">&rarr;</span>', 'Next post link',     'memberlite2' ) );
+				previous_post_link( '<div class="nav-previous">%link</div>', _x( '<span class="meta-nav">&larr;</span> %title', 'Previous post link', 'memberlite' ) );
+				next_post_link(     '<div class="nav-next">%link</div>',     _x( '%title <span class="meta-nav">&rarr;</span>', 'Next post link',     'memberlite' ) );
 			?>
 		</div><!-- .nav-links -->
 	</nav><!-- .navigation -->
@@ -61,11 +61,11 @@ function memberlite2_post_nav() {
 }
 endif;
 
-if ( ! function_exists( 'memberlite2_posted_on' ) ) :
+if ( ! function_exists( 'memberlite_posted_on' ) ) :
 /**
  * Prints HTML with meta information for the current post-date/time and author.
  */
-function memberlite2_posted_on($post = NULL) {		
+function memberlite_posted_on($post = NULL) {		
 
 	if(empty($post))
 		global $post;
@@ -83,14 +83,14 @@ function memberlite2_posted_on($post = NULL) {
 	);
 
 	$posted_on = sprintf(
-		_x( 'Posted on %s', 'post date', 'memberlite2' ),
+		_x( 'Posted on %s', 'post date', 'memberlite' ),
 		'<a href="' . esc_url( get_permalink() ) . '" rel="bookmark">' . $time_string . '</a>'
 	);
 
 	$author = get_userdata($post->post_author);
 	
 	$byline = sprintf(
-		_x( 'by %s', 'post author', 'memberlite2' ),
+		_x( 'by %s', 'post author', 'memberlite' ),
 		'<span class="author vcard"><a class="url fn n" href="' . esc_url( get_author_posts_url( $author->ID ) ) . '">' . esc_html( $author->display_name ) . '</a></span>'
 	);
 
@@ -104,8 +104,8 @@ endif;
  *
  * @return bool
  */
-function memberlite2_categorized_blog() {
-	if ( false === ( $all_the_cool_cats = get_transient( 'memberlite2_categories' ) ) ) {
+function memberlite_categorized_blog() {
+	if ( false === ( $all_the_cool_cats = get_transient( 'memberlite_categories' ) ) ) {
 		// Create an array of all the categories that are attached to posts.
 		$all_the_cool_cats = get_categories( array(
 			'fields'     => 'ids',
@@ -118,27 +118,27 @@ function memberlite2_categorized_blog() {
 		// Count the number of categories that are attached to the posts.
 		$all_the_cool_cats = count( $all_the_cool_cats );
 
-		set_transient( 'memberlite2_categories', $all_the_cool_cats );
+		set_transient( 'memberlite_categories', $all_the_cool_cats );
 	}
 
 	if ( $all_the_cool_cats > 1 ) {
-		// This blog has more than 1 category so memberlite2_categorized_blog should return true.
+		// This blog has more than 1 category so memberlite_categorized_blog should return true.
 		return true;
 	} else {
-		// This blog has only 1 category so memberlite2_categorized_blog should return false.
+		// This blog has only 1 category so memberlite_categorized_blog should return false.
 		return false;
 	}
 }
 
 /**
- * Flush out the transients used in memberlite2_categorized_blog.
+ * Flush out the transients used in memberlite_categorized_blog.
  */
-function memberlite2_category_transient_flusher() {
+function memberlite_category_transient_flusher() {
 	// Like, beat it. Dig?
-	delete_transient( 'memberlite2_categories' );
+	delete_transient( 'memberlite_categories' );
 }
-add_action( 'edit_category', 'memberlite2_category_transient_flusher' );
-add_action( 'save_post',     'memberlite2_category_transient_flusher' );
+add_action( 'edit_category', 'memberlite_category_transient_flusher' );
+add_action( 'save_post',     'memberlite_category_transient_flusher' );
 
 class comment_walker extends Walker_Comment {
 	var $tree_type = 'comment';

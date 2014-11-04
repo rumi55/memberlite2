@@ -1,18 +1,13 @@
 <?php
 /**
- * The template for displaying all pages.
- *
- * This is the template that displays all pages by default.
- * Please note that this is the WordPress construct of pages
- * and that other 'pages' on your WordPress site will use a
- * different template.
+ * The template for displaying forum pages.
  *
  * @package Member Lite 2.0
  */
 
 get_header(); ?>
 
-	<div id="primary" class="medium-8 columns content-area">
+	<div id="primary" class="<?php if(bbp_is_single_user()) { ?>medium-12<?php } else { ?>medium-8<?php } ?> columns content-area">
 		<main id="main" class="site-main" role="main">
 
 			<?php while ( have_posts() ) : the_post(); ?>
@@ -24,5 +19,5 @@ get_header(); ?>
 		</main><!-- #main -->
 	</div><!-- #primary -->
 
-<?php get_sidebar(); ?>
+<?php if(!bbp_is_single_user()) { ?><?php get_sidebar(); ?><?php } ?>
 <?php get_footer(); ?>

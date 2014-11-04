@@ -9,7 +9,7 @@
 
 get_header(); ?>
 
-	<section id="primary" class="column8 content-area">
+	<section id="primary" class="medium-8 columns content-area">
 		<main id="main" class="site-main" role="main">
 
 		<?php if ( have_posts() ) : ?>
@@ -27,7 +27,7 @@ get_header(); ?>
 
 			<?php endwhile; ?>
 
-			<?php memberlite2_paging_nav(); ?>
+			<?php memberlite_paging_nav(); ?>
 
 		<?php else : ?>
 

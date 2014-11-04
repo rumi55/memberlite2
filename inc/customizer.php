@@ -10,15 +10,15 @@
  *
  * @param WP_Customize_Manager $wp_customize Theme Customizer object.
  */
-class MemberLite2_Customize {
+class memberlite_Customize {
 	public static function register ( $wp_customize ) {
 		$wp_customize->add_section(
-			'memberlite2_theme_options', 
+			'memberlite_theme_options', 
 			array(
-				'title' => __( 'Member Lite 2.0 Options', 'memberlite2' ),
+				'title' => __( 'Member Lite 2.0 Options', 'memberlite' ),
 				'priority' => 35,
 				'capability' => 'edit_theme_options',
-				'description' => __('Allows you to customize settings for MemberLite 2.0.', 'memberlite2'),
+				'description' => __('Allows you to customize settings for MemberLite 2.0.', 'memberlite'),
 			) 
 		);
 		$wp_customize->add_setting(
@@ -31,7 +31,7 @@ class MemberLite2_Customize {
 			'sidebar_location',
 			array(
 				'label' => 'Default Layout',
-				'section' => 'memberlite2_theme_options',
+				'section' => 'memberlite_theme_options',
 				'type'       => 'radio',
 					'choices'    => array(
 						'sidebar-right'  => 'Right Sidebar',
@@ -50,7 +50,7 @@ class MemberLite2_Customize {
 			'sidebar_location_blog',
 			array(
 				'label' => 'Layout for Blog, Archive, Posts',
-				'section' => 'memberlite2_theme_options',
+				'section' => 'memberlite_theme_options',
 				'type'       => 'radio',
 					'choices'    => array(
 						'sidebar-blog-right'  => 'Right Sidebar',
@@ -69,7 +69,7 @@ class MemberLite2_Customize {
 			'content_archives',
 			array(
 				'label' => 'Content Archives',
-				'section' => 'memberlite2_theme_options',
+				'section' => 'memberlite_theme_options',
 				'type'       => 'radio',
 					'choices'    => array(
 						'content'  => 'Show Post Content',
@@ -88,7 +88,7 @@ class MemberLite2_Customize {
 			'copyright_textbox',
 			array(
 				'label' => 'Copyright text',
-				'section' => 'memberlite2_theme_options',
+				'section' => 'memberlite_theme_options',
 				'type' => 'text',
 				'priority' => 50
 			)
@@ -104,9 +104,9 @@ class MemberLite2_Customize {
 		);
 		$wp_customize->add_control( new WP_Customize_Color_Control(
 			$wp_customize,
-			'memberlite2_color_primary',
+			'memberlite_color_primary',
 				array(
-				'label' => __( 'Primary Color', 'memberlite2' ),
+				'label' => __( 'Primary Color', 'memberlite' ),
 				'section' => 'colors',
 				'settings' => 'color_primary',
 				'priority' => 10,
@@ -123,9 +123,9 @@ class MemberLite2_Customize {
 		);
 		$wp_customize->add_control( new WP_Customize_Color_Control(
 			$wp_customize,
-			'memberlite2_color_secondary',
+			'memberlite_color_secondary',
 				array(
-				'label' => __( 'Secondary Color', 'memberlite2' ),
+				'label' => __( 'Secondary Color', 'memberlite' ),
 				'section' => 'colors',
 				'settings' => 'color_secondary',
 				'priority' => 20,
@@ -142,9 +142,9 @@ class MemberLite2_Customize {
 		);
 		$wp_customize->add_control( new WP_Customize_Color_Control(
 			$wp_customize,
-			'memberlite2_color_action',
+			'memberlite_color_action',
 				array(
-				'label' => __( 'Action Color', 'memberlite2' ),
+				'label' => __( 'Action Color', 'memberlite' ),
 				'section' => 'colors',
 				'settings' => 'color_action',
 				'priority' => 30,
@@ -175,7 +175,7 @@ class MemberLite2_Customize {
 	
 	public static function live_preview() {
 		wp_enqueue_script( 
-			'memberlite2_customizer',
+			'memberlite_customizer',
 			get_template_directory_uri() . '/js/customizer.js',
 			array(  'jquery', 'customize-preview' ),
 			'20140901',
@@ -202,10 +202,10 @@ class MemberLite2_Customize {
 }
 
 // Setup the Theme Customizer settings and controls...
-add_action( 'customize_register' , array( 'MemberLite2_Customize' , 'register' ) );
+add_action( 'customize_register' , array( 'memberlite_Customize' , 'register' ) );
 
 // Output custom CSS to live site
-add_action( 'wp_head' , array( 'MemberLite2_Customize' , 'header_output' ) );
+add_action( 'wp_head' , array( 'memberlite_Customize' , 'header_output' ) );
 
 // Enqueue live preview javascript in Theme Customizer admin screen
-add_action( 'customize_preview_init' , array( 'MemberLite2_Customize' , 'live_preview' ) );
+add_action( 'customize_preview_init' , array( 'memberlite_Customize' , 'live_preview' ) );

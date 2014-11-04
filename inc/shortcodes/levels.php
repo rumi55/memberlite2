@@ -10,17 +10,20 @@ function pmprot_levels_shortcode($atts, $content=null, $code="")
 	// $content ::= text within enclosing form of shortcode element
 	// $code    ::= the shortcode found, when == callback name
 	// examples: [pmprot_levels levels="1,2,3" layout="table" hightlight="2" description="false" checkout_button="Register Now"]
-
+	
 	extract(shortcode_atts(array(
-		'levels' => NULL,		
-		'layout' => 'div',
-		'highlight' => NULL,
-		'description' => '1',
-		'price' => 'short',
-		'expiration' => '1',
 		'checkout_button' => 'Select',
-		'more_button' => NULL
+		'description' => '1',
+		'discount_code' => NULL,
+		'expiration' => '1',
+		'highlight' => NULL,
+		'layout' => 'div',
+		'levels' => NULL,		
+		'more_button' => NULL,
+		'price' => 'short'		
 	), $atts));
+	
+	global $wpdb, $pmpro_msg, $pmpro_msgt, $current_user, $pmpro_currency_symbol, $pmpro_all_levels, $pmpro_visible_levels, $current_user, $membership_levels;
 	
 	//turn 0's into falses
 	if($description === "0" || $description === "false" || $description === "no")
@@ -41,13 +44,9 @@ function pmprot_levels_shortcode($atts, $content=null, $code="")
 	if($price === "0" || $price === "false" || $price === "hide")
 		$show_price = false;
 	else
-		$show_price = true;
-
-	global $current_user, $membership_levels;
-
-	ob_start();	
+		$show_price = true;	
 		
-		global $wpdb, $pmpro_msg, $pmpro_msgt, $current_user, $pmpro_currency_symbol, $pmpro_all_levels, $pmpro_visible_levels;
+	ob_start();					
 		
 		//make sure pmpro_levels has all levels
 		if(!isset($pmpro_all_levels))
@@ -81,7 +80,24 @@ function pmprot_levels_shortcode($atts, $content=null, $code="")
 		}
 		else
 			$pmpro_levels_filtered = $pmpro_visible_levels;
-			
+		
+		$original_level = $level;
+				  
+		//update per discount code
+		if(!empty($discount_code) && !empty($pmpro_levels_filtered))
+		{			
+			foreach($pmpro_levels_filtered as $level_id => $level)
+			{				
+				//check code for this level and update if applicable
+				if(pmpro_checkDiscountCode($discount_code, $level->id))
+				{
+					$sqlQuery = "SELECT l.id, cl.*, l.name, l.description, l.allow_signups FROM $wpdb->pmpro_discount_codes_levels cl LEFT JOIN $wpdb->pmpro_membership_levels l ON cl.level_id = l.id LEFT JOIN $wpdb->pmpro_discount_codes dc ON dc.id = cl.code_id WHERE dc.code = '" . $discount_code . "' AND cl.level_id = '" . (int)$level->id . "' LIMIT 1";
+					$pmpro_levels_filtered[$level_id] = $wpdb->get_row($sqlQuery);
+					$pmpro_levels_filtered[$level_id]->base_level = $level;					
+				}				
+			}		
+		}
+					
 		if($layout == 'table')
 		{
 			?>
@@ -102,7 +118,7 @@ function pmprot_levels_shortcode($atts, $content=null, $code="")
 			<?php	
 				$count = 0;
 				foreach($pmpro_levels_filtered as $level)
-				{
+				{				  
 				  if(isset($current_user->membership_level->ID))
 					  $current_level = ($current_user->membership_level->ID == $level->id);
 				  else
@@ -185,10 +201,7 @@ function pmprot_levels_shortcode($atts, $content=null, $code="")
 		else
 		{
 			?>
-			<div id="pmpro_levels" class="pmpro_levels-<?php echo $layout; ?>">
-			<?php if(count($pmpro_levels) > 1) { ?>
-				<div class="container12"><div class="row">
-			<?php } ?>
+			<div id="pmpro_levels" class="pmpro_levels-<?php echo $layout; ?> row">
 			<?php	
 				$count = 0;
 				foreach($pmpro_levels_filtered as $level)
@@ -199,13 +212,13 @@ function pmprot_levels_shortcode($atts, $content=null, $code="")
 					else
 					  $current_level = false;
 				?>
-				<div class="column<?php
-					if($layout == '2col') { echo '6'; if($count == 2) { echo ' omega'; } }
-					elseif($layout == '3col') { echo '4'; if($count == 3) { echo ' omega'; } }
-					elseif($layout == '4col') { echo '3'; if($count == 4) { echo ' omega'; } } 
+				<div class="medium-<?php
+					if($layout == '2col') { echo '6'; }
+					elseif($layout == '3col') { echo '4'; }
+					elseif($layout == '4col') { echo '3'; } 
 					else { if(count($pmpro_levels) > 1) { echo '12'; } } 
-					if($count == 1 || ($layout == 'div' || empty($layout))) { echo ' alpha'; }
-				?>">
+					//if($count == 1 || ($layout == 'div' || empty($layout))) { echo '12'; }
+				?> columns">
 				<div class="hentry post <?php if($current_level == $level) { echo 'pmpro_level-current'; } if($highlight == $level->id) { echo 'pmpro_level-highlight'; } ?>">
 					<h2><?php echo $level->name?></h2>
 					<?php if((!empty($description) || !empty($more_button)) && ($layout == 'div' || $layout == '2col' || empty($layout))) { ?>
@@ -387,10 +400,7 @@ function pmprot_levels_shortcode($atts, $content=null, $code="")
 				<?php
 				}
 			?>
-			<?php if(count($pmpro_levels) > 1) { ?>
-				</div></div> <!-- row -->
-			<?php } ?>
-			</div> <!-- #pmpro_levels -->
+			</div> <!-- #pmpro_levels, .row -->
 		<?php
 		} //end else if no layout specified, use 'div'
 	?>

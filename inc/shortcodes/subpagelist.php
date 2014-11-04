@@ -82,7 +82,7 @@ function pmprot_subpagelist_shortcode_handler($atts, $content=null, $code="") {
 		if($link)
 		{
 			$r .= '<p><a class="more-link" href="' . get_permalink() . '" rel="permalink">';
-			$r .= __('Continue Reading','memberlite2');
+			$r .= __('Continue Reading','memberlite');
 			$r .= '</a></p>';
 		}
 								

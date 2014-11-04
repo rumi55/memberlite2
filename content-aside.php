@@ -5,48 +5,8 @@
 ?>
 
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
-	<?php		
-		if(memberlite_getPostThumbnailWidth($post->ID) > '740')
-		{
-			//get src of thumbnail
-			$thumbnail = wp_get_attachment_image_src( get_post_thumbnail_id($post->ID), 'banner');			
-			?>
-			<div class="entry-banner" style="background-image: url('<?php echo esc_attr($thumbnail[0]);?>');">
-			<?php
-		}
-		else
-		{
-			?>
-			<?php the_post_thumbnail( 'thumbnail', array( 'class' => 'alignright' ) );
-		}
-	?>
-		<header class="entry-header">
-			<?php $author_id = $post->post_author; ?>
-			<div class="post_author_avatar"><?php echo get_avatar( $author_id, 80 ); ?></div>
-			<?php the_title( sprintf( '<h1 class="entry-title"><a href="%s" rel="bookmark">', esc_url( get_permalink() ) ), '</a></h1>' ); ?>
-			<?php if ( 'post' == get_post_type() ) : ?>
-			<div class="entry-meta">
-				<?php memberlite_posted_on(); ?>
-			</div><!-- .entry-meta -->
-			<?php endif; ?>
-		</header><!-- .entry-header -->
-	<?php		
-		if(memberlite_getPostThumbnailWidth($post->ID) > '740')
-		{
-			?>
-			</div> <!-- .entry-banner -->
-			<?php
-		}
-	?>
-
 	<div class="entry-content">
-		<?php 
-			$content_archives = get_theme_mod('content_archives'); 
-			if($content_archives == 'excerpt')
-				the_excerpt();
-			else
-				the_content( __( 'Continue Reading', 'memberlite' ) ); 
-		?>
+		<?php the_content( __( 'Continue Reading', 'memberlite' ) ); ?>
 		<?php
 			wp_link_pages( array(
 				'before' => '<div class="page-links">' . __( 'Pages:', 'memberlite' ),
@@ -55,8 +15,9 @@
 		?>
 		<div class="clear"></div>
 	</div><!-- .entry-content -->
-
 	<footer class="entry-footer">
+		<a href="<?php the_permalink(); ?>" rel="bookmark"><i class="fa fa-link"></i></a>
+		<?php memberlite_posted_on(); ?>
 		<?php if ( 'post' == get_post_type() ) : // Hide category and tag text for pages on Search ?>
 			<?php
 				/* translators: used between list items, there is a space after the comma */
@@ -64,7 +25,7 @@
 				if ( $categories_list && memberlite_categorized_blog() ) :
 			?>
 			<span class="cat-links">
-				<?php printf( __( 'Posted in %1$s.', 'memberlite' ), $categories_list ); ?>
+				<?php printf( __( 'in %1$s.', 'memberlite' ), $categories_list ); ?>
 			</span>
 			<?php endif; // End if categories ?>
 

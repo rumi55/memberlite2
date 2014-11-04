@@ -11,7 +11,7 @@ if(empty($checkout_button))
 	$checkout_button = 'Select';	
 get_header(); ?>
 
-	<div id="primary" class="column8 content-area">
+	<div id="primary" class="medium-8 columns content-area">
 		<main id="main" class="site-main" role="main">
 
 			<?php while ( have_posts() ) : the_post(); ?>
@@ -20,10 +20,22 @@ get_header(); ?>
 			
 			<?php endwhile; // end of the loop. ?>
 
+			<?php if(!empty($landing_page_upsell)) { ?>
+						
+				<hr />
+					
+				<?php 
+					if(is_numeric($landing_page_upsell))
+						echo do_shortcode('[pmprot_levels levels="' . intval($landing_page_upsell) . '"]');
+					else
+						echo apply_filters('the_content', $landing_page_upsell);
+				?>
+			<?php } ?>
+
 		</main><!-- #main -->
 	</div><!-- #primary -->
 
-	<div id="secondary" class="column4 widget-area" role="complementary">
+	<div id="secondary" class="medium-4 columns widget-area" role="complementary">
 		<?php
 			if(!empty($before_sidebar)) 
 			{ 
@@ -34,20 +46,6 @@ get_header(); ?>
 				echo do_shortcode('[pmprot_signup level="' . $landing_page_level . '" short="true" title="Sign Up Now"]'); 
 			}
 		?>
-	</div>
-	
-	<?php if(!empty($landing_page_upsell)) { ?>
-				
-		<hr />
-				
-		<div class="column12">			
-			<?php 
-				if(is_numeric($landing_page_upsell))
-					echo do_shortcode('[pmprot_levels levels="' . intval($landing_page_upsell) . '"]');
-				else
-					echo apply_filters('the_content', $landing_page_upsell);
-			?>
-		</div>
-	<?php } ?>
+	</div>	
 	
 <?php get_footer(); ?>

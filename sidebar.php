@@ -12,7 +12,7 @@ if ( ! is_active_sidebar( 'sidebar-1' ) ) {
 */
 ?>
 
-<div id="secondary" class="column4 widget-area" role="complementary">
+<div id="secondary" class="medium-4 columns widget-area" role="complementary">
 <?php 
 	if (is_404() || is_home() || is_search() || is_single() || is_category() || is_author() || is_archive() || is_day() || is_month() || is_year() ) 
 	{

@@ -18,36 +18,36 @@
 /**
  * Setup the WordPress core custom header feature.
  *
- * @uses memberlite2_header_style()
- * @uses memberlite2_admin_header_style()
- * @uses memberlite2_admin_header_image()
+ * @uses memberlite_header_style()
+ * @uses memberlite_admin_header_style()
+ * @uses memberlite_admin_header_image()
  */
-function memberlite2_custom_header_setup() {
-	add_theme_support( 'custom-header', apply_filters( 'memberlite2_custom_header_args', array(
+function memberlite_custom_header_setup() {
+	add_theme_support( 'custom-header', apply_filters( 'memberlite_custom_header_args', array(
 		'default-image'          => '',
 		'default-text-color'     => '2c3e50',
-		'width'                  => 1000,
-		'height'                 => 250,
+		'width'                  => 720,
+		'height'                 => 200,
 		'flex-height'            => true,
-		'wp-head-callback'       => 'memberlite2_header_style',
-		'admin-head-callback'    => 'memberlite2_admin_header_style',
-		'admin-preview-callback' => 'memberlite2_admin_header_image',
+		'wp-head-callback'       => 'memberlite_header_style',
+		'admin-head-callback'    => 'memberlite_admin_header_style',
+		'admin-preview-callback' => 'memberlite_admin_header_image',
 	) ) );
 }
-add_action( 'after_setup_theme', 'memberlite2_custom_header_setup' );
+add_action( 'after_setup_theme', 'memberlite_custom_header_setup' );
 
-if ( ! function_exists( 'memberlite2_header_style' ) ) :
+if ( ! function_exists( 'memberlite_header_style' ) ) :
 /**
  * Styles the header image and text displayed on the blog
  *
- * @see memberlite2_custom_header_setup().
+ * @see memberlite_custom_header_setup().
  */
-function memberlite2_header_style() {
+function memberlite_header_style() {
 	$header_text_color = get_header_textcolor();
+	$header_image = get_header_image();
 
 	// If no custom options for text are set, let's bail
-	// get_header_textcolor() options: HEADER_TEXTCOLOR is default, hide text (returns 'blank') or any hex value
-	if ( HEADER_TEXTCOLOR == $header_text_color ) {
+	if ( empty( $header_image ) || HEADER_TEXTCOLOR == $header_text_color ) {
 		return;
 	}
 
@@ -55,10 +55,37 @@ function memberlite2_header_style() {
 	?>
 	<style type="text/css">
 	<?php
+		if ( ! empty( $header_image ) ) :
+	?>
+		.site-branding .site-title a {
+			display: block;
+			background: url(<?php header_image(); ?>) no-repeat left top;
+			background-size: 360px 100px;
+			width: 360px;
+			height: 100px;
+		}
+		.site-header .site-title {
+			margin: 0;
+		}
+		@media (max-width: 767px) {
+			.site-branding {
+				background-size: 768px auto;
+			}
+		}
+		@media (max-width: 359px) {
+			.site-branding {
+				background-size: 360px auto;
+			}
+		}
+	<?php
+		endif;
+
 		// Has the text been hidden?
 		if ( 'blank' == $header_text_color ) :
 	?>
-		.site-title,
+		.site-title {
+			text-indent: -9999em;	
+		}
 		.site-description {
 			position: absolute;
 			clip: rect(1px, 1px, 1px, 1px);
@@ -75,15 +102,15 @@ function memberlite2_header_style() {
 	</style>
 	<?php
 }
-endif; // memberlite2_header_style
+endif; // memberlite_header_style
 
-if ( ! function_exists( 'memberlite2_admin_header_style' ) ) :
+if ( ! function_exists( 'memberlite_admin_header_style' ) ) :
 /**
  * Styles the header image displayed on the Appearance > Header admin panel.
  *
- * @see memberlite2_custom_header_setup().
+ * @see memberlite_custom_header_setup().
  */
-function memberlite2_admin_header_style() {
+function memberlite_admin_header_style() {
 ?>
 	<style type="text/css">
 		.appearance_page_custom-header #headimg {
@@ -102,19 +129,21 @@ function memberlite2_admin_header_style() {
 			color: #AAA;
 		}
 		#headimg img {
+			width: 360px;
+			height: 100px;
 		}
 	</style>
 <?php
 }
-endif; // memberlite2_admin_header_style
+endif; // memberlite_admin_header_style
 
-if ( ! function_exists( 'memberlite2_admin_header_image' ) ) :
+if ( ! function_exists( 'memberlite_admin_header_image' ) ) :
 /**
  * Custom header image markup displayed on the Appearance > Header admin panel.
  *
- * @see memberlite2_custom_header_setup().
+ * @see memberlite_custom_header_setup().
  */
-function memberlite2_admin_header_image() {
+function memberlite_admin_header_image() {
 	$style = sprintf( ' style="color:#%s;"', get_header_textcolor() );
 ?>
 	<div id="headimg">
@@ -126,4 +155,4 @@ function memberlite2_admin_header_image() {
 	</div>
 <?php
 }
-endif; // memberlite2_admin_header_image
+endif; // memberlite_admin_header_image
