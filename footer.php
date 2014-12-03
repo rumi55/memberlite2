@@ -7,13 +7,14 @@
  * @package Member Lite 2.0
  */
 ?>
-		<?php if(!is_front_page() || !is_page_template('templates/fluid-width.php')) { ?></div><!-- .row --><?php } ?>
+		<?php if(!is_front_page() || !is_page_template('templates/fluid-width.php') || !is_page_template( 'templates/interstitial.php' )) { ?></div><!-- .row --><?php } ?>
 	</div><!-- #content -->
-
+	
+	<?php if(!is_page_template( 'templates/interstitial.php' )) { ?>
 	<footer id="colophon" class="site-footer" role="contentinfo">
 		<div class="footer-widgets">
  			<div class="row">
-					<?php dynamic_sidebar('sidebar-4');	?>
+				<?php dynamic_sidebar('sidebar-4');	?>
 			</div><!-- .row -->
 		</div><!-- .footer-widgets -->
 		<nav id="footer-navigation">
@@ -40,6 +41,7 @@
 			</div><!-- .columns -->
 		</div><!-- .row, .site-info -->
 	</footer><!-- #colophon -->
+	<?php } ?>
 </div><!-- #page -->
 
 <?php wp_footer(); ?>

@@ -13,6 +13,7 @@ function pmprot_recent_posts_shortcode_handler($atts, $content=null, $code="") {
 	// examples: [pmprot_recent_posts title="Recent Posts" show="none" category_id="2"]
 	
 	extract(shortcode_atts(array(
+		'count' => '3',
 		'title' => NULL,
 		'subtitle' => NULL,
 		'show' => 'excerpt',
@@ -23,10 +24,10 @@ function pmprot_recent_posts_shortcode_handler($atts, $content=null, $code="") {
 	$r = '<div class="pmprot_recent_posts">';
 		
 	// get posts
-	if(!empty($category))
-		query_posts(array("post_type"=>"post", "posts_per_page"=>"3", "ignore_sticky_posts"=>true, "cat"=>$category));
+	if(!empty($category_id))
+		query_posts(array("post_type"=>"post", "posts_per_page"=>$count, "ignore_sticky_posts"=>true, "cat"=>$category_id));
   	else
-		query_posts(array("post_type"=>"post", "posts_per_page"=>"3", "ignore_sticky_posts"=>true,));
+		query_posts(array("post_type"=>"post", "posts_per_page"=>$count, "ignore_sticky_posts"=>true,));
 	
 	if(!empty($title))
 		$r .= '<h1>' . $title . '</h1>';
@@ -35,13 +36,24 @@ function pmprot_recent_posts_shortcode_handler($atts, $content=null, $code="") {
 	
 	$r .= '<div class="row">';
 	
-	$count = 0;
+	$counter = 0;
+	
+	if($count == "1")
+		$colclass = "large-12";
+	elseif($count == "2")
+		$colclass = "medium-6";
+	elseif($count == "3")
+		$colclass = "medium-4";
+	elseif($count == "4")
+		$colclass = "medium-3";
+	else
+		$colclass = "medium-6";
 	
 	// the Loop		
 	if ( have_posts() ) : while ( have_posts() ) : the_post();	
-		$count++;
+		$counter++;
 
-		$r .= '<div class="medium-4 columns">';
+		$r .= '<div class="' . $colclass . ' columns">';
 
 		$r .= '<article id="post-' . get_the_ID() . '" class="' . implode(" ", get_post_class()) . '">';
 
@@ -49,6 +61,8 @@ function pmprot_recent_posts_shortcode_handler($atts, $content=null, $code="") {
 		{
 			$r .= '<a class="widget_post_thumbnail" href="' . get_permalink() . '">' . get_the_post_thumbnail($post->ID, 'mini') . '</a>';
 		}
+		elseif( 'video' == get_post_format() )
+			$r .= '<a class="widget_post_thumbnail" href="' . get_permalink() . '"><i class="fa fa-video-camera"></i></a>';
 		
 		$r .= '<header class="entry-header">';
 		$r .= '<h4 class="entry-title">';
@@ -60,22 +74,32 @@ function pmprot_recent_posts_shortcode_handler($atts, $content=null, $code="") {
 		
 		$r .= '</header>';		
 
+		$r .= '<div class="entry-content">';
 		if($show == "excerpt")
 			$r .= apply_filters('the_content', get_the_excerpt( '' ));
 		else
 			$r .= '';
-		
+		$r .= '</div>';
 		$r .= '<p><a class="more-link" href="' . get_permalink() . '" rel="permalink">';
 		$r .= __('Continue Reading','memberlite');
 		$r .= '</a></p>';
 									
 		$r .= '</article>';
 		$r .= '</div>';
-			
+		
+		if(($count > 4) && ($counter % 2 == 0))
+		{
+			$r .= '</div><!-- .row -->';
+			$r .= '<div class="row">';
+		}
+		
 	endwhile; endif;
 	
-	$r .= '</div><!-- .row -->';
-	$r .= '</div> <!-- .pmprot_recent_posts -->';
+	if(! (($count > 4) && ($counter % 2 == 0)) )
+	{
+		$r .= '</div><!-- .row -->';
+		$r .= '</div> <!-- .pmprot_recent_posts -->';
+	}
 	
 	//Reset Query
 	wp_reset_query();

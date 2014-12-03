@@ -124,7 +124,7 @@ function pmprot_levels_shortcode($atts, $content=null, $code="")
 				  else
 					  $current_level = false;
 				?>
-				<tr class="<?php if($current_level == $level) { echo 'pmpro_level-current'; } if($highlight == $level->id) { echo 'pmpro_level-highlight'; } ?>">
+				<tr class="<?php if($current_level == $level) { echo 'pmpro_level-current '; } if($highlight == $level->id) { echo 'pmpro_level-highlight '; } ?>">
 					<td>
 						<h2><?php echo $level->name?></h2>
 						<?php if(!empty($description)) { echo wpautop($level->description); } ?>
@@ -219,7 +219,7 @@ function pmprot_levels_shortcode($atts, $content=null, $code="")
 					else { if(count($pmpro_levels) > 1) { echo '12'; } } 
 					//if($count == 1 || ($layout == 'div' || empty($layout))) { echo '12'; }
 				?> columns">
-				<div class="hentry post <?php if($current_level == $level) { echo 'pmpro_level-current'; } if($highlight == $level->id) { echo 'pmpro_level-highlight'; } ?>">
+				<div class="hentry post <?php if($current_level == $level) { echo 'pmpro_level-current '; } if($highlight == $level->id) { echo 'pmpro_level-highlight '; } ?>">
 					<h2><?php echo $level->name?></h2>
 					<?php if((!empty($description) || !empty($more_button)) && ($layout == 'div' || $layout == '2col' || empty($layout))) { ?>
 						<div class="entry-content">
@@ -405,7 +405,7 @@ function pmprot_levels_shortcode($atts, $content=null, $code="")
 		} //end else if no layout specified, use 'div'
 	?>
 		
-		
+		<?php if(!is_page_template( 'templates/interstitial.php' )) { ?> 
 		<nav id="nav-below" class="navigation" role="navigation">
 			<div class="nav-previous alignleft">
 				<?php if(!empty($current_user->membership_level->ID)) { ?>
@@ -415,6 +415,7 @@ function pmprot_levels_shortcode($atts, $content=null, $code="")
 				<?php } ?>
 			</div>
 		</nav>	
+		<?php } ?>
 	<?php
 	$temp_content = ob_get_contents();
 	ob_end_clean();

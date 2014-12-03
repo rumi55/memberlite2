@@ -26,62 +26,89 @@
 	<a class="skip-link screen-reader-text" href="#content"><?php _e( 'Skip to content', 'memberlite' ); ?></a>
     <header id="masthead" class="site-header" role="banner">
 		<div class="row">
-			<div class="medium-4 columns site-branding">
+			<div class="<?php if(is_page_template( 'templates/interstitial.php' )) { echo 'large-12'; } else { echo 'medium-4'; } ?> columns site-branding">
 				<button class="menu-toggle"><i class="fa fa-bars"></i></button>
 				<h1 class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></h1>
 				<span class="site-description"><?php bloginfo( 'description' ); ?></span>
 			</div><!-- .column4 -->
-			<div class="medium-8 columns header-right">
-				<div id="meta-member">
-					<aside class="widget">
-					<?php 
-						global $current_user, $pmpro_pages;
-						if($user_ID)
-						{ 
-							?>				
-							<span class="user">Welcome, <?php echo preg_replace("/\@.*/", "", $current_user->display_name)?></span>
-							<?php
-								if(!empty($pmpro_pages))
-								{
-									$account_page = get_post($pmpro_pages['account']);
-									?>
-									<a href="<?php echo pmpro_url("account"); ?>"><?php echo $account_page->post_title; ?></a>
-									<?php
-								}
-								else
-								{
-									?>
-									<a href="<?php echo admin_url("profile.php"); ?>"><?php _e( 'Profile', 'memberlite' ); ?></a>
-									<?php
-								}
-							?>
-							<a href="<?php echo wp_logout_url( ); ?>"><?php _e( 'Log Out', 'memberlite' ); ?></a>
-							<?php 
-						} 
-						else 
-						{ 
-							?>
-							<a href="<?php echo wp_login_url(); ?>"><?php _e( 'Log In', 'memberlite' ); ?></a>
-							<a href="<?php echo wp_registration_url(); ?>"><?php _e( 'Register', 'memberlite' ); ?></a>
-							<?php
-						} 
+			<?php 
+				if(!is_page_template( 'templates/interstitial.php' ) ) 
+				{
+					$meta_login = get_theme_mod( 'meta_login' );
 					?>
-					</aside>
-				</div><!-- #meta-member -->
-				<?php 	
-					$meta_defaults = array(
-						'theme_location' => 'meta',
-						'container' => 'nav',
-						'container_id' => 'meta-navigation',
-						'container_class' => 'meta-navigation',
-						'fallback_cb' => false
-					);					
-					wp_nav_menu( $meta_defaults ); 
-				?>
-				<?php dynamic_sidebar('sidebar-3'); ?>
-			</div><!-- .column8 -->
+					<div class="medium-8 columns header-right<?php if($meta_login == false) { ?> no-meta-menu<?php } ?>">
+						<?php
+							if($meta_login != false)
+							{
+								?>
+								<div id="meta-member">
+									<aside class="widget">
+									<?php 
+										global $current_user, $pmpro_pages;
+										if($user_ID)
+										{ 
+											?>				
+											<span class="user">Welcome, 
+											<?php
+												if(!empty($pmpro_pages))
+												{
+													$account_page = get_post($pmpro_pages['account']);
+													?>
+													<a href="<?php echo pmpro_url("account"); ?>"><?php echo preg_replace("/\@.*/", "", $current_user->display_name)?></a>
+													<?php
+												}
+												else
+												{
+													?>
+													<a href="<?php echo admin_url("profile.php"); ?>"><?php echo preg_replace("/\@.*/", "", $current_user->display_name)?></a>
+													<?php
+												}
+											?>
+											</span>
+											<?php 	
+												$member_menu_defaults = array(
+													'theme_location' => 'member',
+													'container' => 'nav',
+													'container_id' => 'member-navigation',
+													'container_class' => 'member-navigation',
+													'fallback_cb' => false
+												);					
+												wp_nav_menu( $member_menu_defaults ); 
+											?>
+											<a href="<?php echo wp_logout_url( ); ?>"><?php _e( 'Log Out', 'memberlite' ); ?></a>
+											<?php 
+										} 
+										else 
+										{ 
+											?>
+											<a href="<?php echo wp_login_url(); ?>"><?php _e( 'Log In', 'memberlite' ); ?></a>
+											<a href="<?php echo wp_registration_url(); ?>"><?php _e( 'Register', 'memberlite' ); ?></a>
+											<?php
+										} 
+									?>
+									</aside>
+								</div><!-- #meta-member -->
+								<?php 
+							} 
+						?>
+						<?php 	
+							$meta_defaults = array(
+								'theme_location' => 'meta',
+								'container' => 'nav',
+								'container_id' => 'meta-navigation',
+								'container_class' => 'meta-navigation',
+								'fallback_cb' => false
+							);					
+							wp_nav_menu( $meta_defaults ); 
+						?>
+						<?php dynamic_sidebar('sidebar-3'); ?>
+					</div><!-- .column8 -->
+					<?php 
+				}
+			?>
 		</div><!-- .row -->
 	</header><!-- #masthead -->
+	<?php if(!is_page_template( 'templates/interstitial.php' )) { ?>
 	<nav id="site-navigation">
 	<?php 
 		$primary_defaults = array(
@@ -94,36 +121,47 @@
 		wp_nav_menu($primary_defaults); 				
 	?>
 	</nav><!-- #site-navigation -->
+	<?php } ?>
 	<div id="content" class="site-content">
-		<?php if(!is_front_page()) { ?>
-            <?php		
-                global $post;
-                if((is_singular('post') || (is_page()) && !is_page_template( 'templates/landing-page.php' )) && memberlite_getPostThumbnailWidth($post->ID) > '740')
-                {
-                    //get src of thumbnail
-                    $thumbnail = wp_get_attachment_image_src( get_post_thumbnail_id($post->ID), 'full');			
-                    ?>
-                    <div class="masthead-banner" style="background-image: url('<?php echo esc_attr($thumbnail[0]);?>');">
-                    <?php
-                }
-            ?>
-            <header class="masthead">
-				<div class="row">
-					<div class="large-12 columns">
-						<?php memberlite_page_title(); ?>
-					</div>
-				</div><!-- .row -->
-			</header><!-- .masthead -->
-            <?php
-                if((is_singular('post') || (is_page()) && !is_page_template( 'templates/landing-page.php' )) && memberlite_getPostThumbnailWidth($post->ID) > '740')
-                {
-                    ?>
-                    </div> <!-- .masthead-banner -->
-                    <?php
-                }
-            ?>
-			<?php if(!is_page_template( 'templates/fluid-width.php' )) { ?>
-				<div class="row">
-			<?php } ?>
-		<?php } ?>
-	
+		<?php 
+			if(!is_front_page() || 'posts' == get_option( 'show_on_front' ))
+			{
+				global $post;
+				if((is_singular('post') || (is_page()) && !is_page_template( 'templates/landing-page.php' )) && memberlite_getPostThumbnailWidth($post->ID) > '740')
+				{
+					//get src of thumbnail
+					$thumbnail = wp_get_attachment_image_src( get_post_thumbnail_id($post->ID), 'full');			
+					?>
+					<div class="masthead-banner" style="background-image: url('<?php echo esc_attr($thumbnail[0]);?>');">
+					<?php
+				}
+				?>
+				<header class="masthead">
+					<div class="row">
+						<div class="large-12 columns">
+							<?php if(is_page_template( 'templates/interstitial.php' )) { 
+								$referrer = $_GET['redirect_to'];
+								?>
+								<a class="btn" href="<?php echo esc_attr($referrer); ?>">No Thanks &raquo;</a>
+							<?php } else { ?>
+								<?php pmprot_getBreadcrumbs(); ?>
+							<?php } ?>
+							<?php memberlite_page_title(); ?>
+						</div>
+					</div><!-- .row -->
+				</header><!-- .masthead -->
+				<?php
+					if((is_singular('post') || (is_page()) && !is_page_template( 'templates/landing-page.php' )) && memberlite_getPostThumbnailWidth($post->ID) > '740')
+					{
+						?>
+						</div> <!-- .masthead-banner -->
+						<?php
+					}
+				?>
+				<?php if(!is_page_template( 'templates/fluid-width.php' )) { ?>
+					<div class="row">
+				<?php } ?>
+				<?php 
+			//end !is_front_page()
+			} 
+		?>

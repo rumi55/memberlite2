@@ -11,6 +11,7 @@ function memberlite_init_styles()
 	if(!is_admin() )
 	{
 		wp_enqueue_script('jquery');
+		wp_enqueue_style( 'memberlite-style', get_stylesheet_uri(), NULL, "6.7" );
 		wp_enqueue_style('memberlite_fontawesome', get_template_directory_uri() . "/font-awesome/css/font-awesome.min.css", NULL, NULL, "all");
 		wp_enqueue_style('memberlite_grid', get_template_directory_uri() . "/css/grid.css", NULL, NULL, "all");
 	}
@@ -19,7 +20,7 @@ add_action("init", "memberlite_init_styles");
 
 function memberlite_load_fonts()
 {
-	wp_register_style('googleFonts', 'http://fonts.googleapis.com/css?family=Noto+Sans:400,700|Fjalla+One');
+	wp_register_style('googleFonts', 'http://fonts.googleapis.com/css?family=' . str_replace('_','|',str_replace('-','+',get_theme_mod('memberlite_webfonts')) ) );
 	wp_enqueue_style( 'googleFonts');
 }
 add_action('wp_print_styles', 'memberlite_load_fonts');
@@ -66,6 +67,7 @@ function memberlite_setup() {
 	// This theme uses wp_nav_menu() in one location.
 	register_nav_menus( array(
 		'primary' => __( 'Primary Menu', 'memberlite' ),
+		'member' => __( 'Member Menu', 'memberlite' ),
 		'meta' => __( 'Meta Menu', 'memberlite' ),
 		'footer' => __( 'Footer Menu', 'memberlite' ),
 	) );
@@ -131,11 +133,21 @@ function memberlite_widgets_init() {
 		'before_title'  => '<h1 class="widget-title">',
 		'after_title'   => '</h1>',
 	) );
+
+	$footer_widgets_count = get_theme_mod('memberlite_footerwidgets');
+	if($footer_widgets_count == '2')
+		$footer_widgets_col_class = 'medium-6';
+	elseif($footer_widgets_count == '3')
+		$footer_widgets_col_class = 'medium-4';
+	elseif($footer_widgets_count == '6')
+		$footer_widgets_col_class = 'large-3';
+	else
+		$footer_widgets_col_class = 'medium-3';
 	register_sidebar( array(
 		'name'          => __( 'Footer Widgets', 'memberlite' ),
 		'id'            => 'sidebar-4',
-		'description'   => 'Add up to 4 widgets in this area for best appearance',
-		'before_widget' => '<aside id="%1$s" class="widget medium-3 columns %2$s">',
+		'description'   => 'You can set the number of widget columns in Appearance > Customize. Default: 4 columns.',
+		'before_widget' => '<aside id="%1$s" class="widget ' . $footer_widgets_col_class . ' columns %2$s">',
 		'after_widget'  => '</aside>',
 		'before_title'  => '<h3 class="widget-title">',
 		'after_title'   => '</h3>',
@@ -156,7 +168,7 @@ add_action( 'widgets_init', 'memberlite_widgets_init' );
  * Enqueue scripts and styles.
  */
 function memberlite_scripts() {
-	wp_enqueue_style( 'memberlite-style', get_stylesheet_uri() );
+	wp_enqueue_style( 'memberlite-style', get_template_directory_uri() . '/style.css' );
 
 	wp_enqueue_script( 'memberlite-navigation', get_template_directory_uri() . '/js/navigation.js', array(), '20120206', true );
 

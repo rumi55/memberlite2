@@ -79,6 +79,8 @@ class WP_Widget_Recent_Posts_Thumbnails extends WP_Widget {
 			<li>
 				<?php if ( has_post_thumbnail() ) : ?>
 					<a class="widget_post_thumbnail" href="<?php the_permalink(); ?>"><?php the_post_thumbnail('mini'); ?></a>
+				<?php elseif( 'video' == get_post_format() ) : ?>
+					<a class="widget_post_thumbnail" href="<?php the_permalink(); ?>"><i class="fa fa-video-camera"></i></a>
 				<?php endif; ?>	
 				<h4><a href="<?php the_permalink(); ?>"><?php get_the_title() ? the_title() : the_ID(); ?></a></h4>
 			<?php if ( $show_date ) : ?>

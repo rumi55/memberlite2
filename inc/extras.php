@@ -36,6 +36,10 @@ function memberlite_body_classes( $classes ) {
 		$classes[] = 'content-sidebar';
 	if ( is_multi_author() ) {
 		$classes[] = 'group-blog';
+	if ( is_page_template( 'templates/landing.php' ) )
+		$classes[] = 'landing';
+	if ( is_page_template( 'templates/interstitial.php' ) )
+		$classes[] = 'interstitial';
 	}
 	return $classes;
 }
@@ -323,7 +327,21 @@ remove_action( 'woocommerce_sidebar', 'woocommerce_get_sidebar', 10);
 remove_action( 'woocommerce_archive_description', 'woocommerce_taxonomy_archive_description' );
 remove_action( 'woocommerce_archive_description', 'woocommerce_product_archive_description' );
 add_filter('woocommerce_show_page_title',false);
-
+add_filter ( 'woocommerce_product_thumbnails_columns', 'xx_thumb_cols' );
+function xx_thumb_cols() {
+	return 5; // .last class applied to every 4th thumbnail
+}
+function woo_related_products_limit() {
+	global $product;
+	$args['posts_per_page'] = 4;
+	return $args;
+}
+add_filter( 'woocommerce_output_related_products_args', 'memberlite_related_products_args' );
+	function memberlite_related_products_args( $args ) {	
+	$args['posts_per_page'] = 4; // 4 related products
+	$args['columns'] = 4; // arranged in 2 columns
+	return $args;
+}
 function pmprot_getLevelCost(&$level, $tags = true, $short = false)
 {
 	global $pmpro_currency_symbol;
@@ -466,4 +484,185 @@ function pmprot_getLevelLandingPage($level_id) {
 		return false;
 	else
 		return $posts[0];
+}
+
+function pmprot_getBreadcrumbs()
+{
+	$page_breadcrumbs = get_theme_mod( 'page_breadcrumbs' );
+	$post_breadcrumbs = get_theme_mod( 'post_breadcrumbs' );
+	$archive_breadcrumbs = get_theme_mod( 'archive_breadcrumbs' );
+	$attachment_breadcrumbs = get_theme_mod( 'attachment_breadcrumbs' );
+	$search_breadcrumbs = get_theme_mod( 'search_breadcrumbs' );
+	$profile_breadcrumbs = get_theme_mod( 'profile_breadcrumbs' );
+	$show_breadcrumbs = ( '' != $page_breadcrumbs
+		|| '' != $post_breadcrumbs
+		|| '' != $archive_breadcrumbs
+		|| '' != $attachment_breadcrumbs
+		|| '' != $search_breadcrumbs
+		|| '' != $profile_breadcrumbs
+	) ? true : false;	
+	global $posts, $post;
+	if($show_breadcrumbs && !is_woocommerce())
+	{
+		if(is_attachment() && '' != $attachment_breadcrumbs)
+		{
+		?>
+		<nav class="memberlite-breadcrumb" itemprop="breadcrumb"><ul class="menu">
+          	<li><a href="<?php echo get_option('home'); ?>/">Home</a></li>
+			<?php
+				global $post;
+				$parent_id  = $post->post_parent;
+				$breadcrumbs = array();
+				while ($parent_id) {
+				  $page = get_page($parent_id);
+				  $breadcrumbs[] = '<a href="'.get_permalink($page->ID).'" title="">'.get_the_title($page->ID).'</a>';
+				  $parent_id  = $page->post_parent;
+				}
+				$breadcrumbs = array_reverse($breadcrumbs);
+				foreach ($breadcrumbs as $crumb) echo ' <li>'.$crumb.'</li>';
+			?>
+			<li class="active"><?php the_title(); ?></li>
+		</ul></nav>
+		<?php
+		}		
+		elseif(is_page() && !is_front_page() && !is_attachment() && '' != $page_breadcrumbs)
+		{
+		?>			
+		<nav class="memberlite-breadcrumb" itemprop="breadcrumb"><ul class="menu">
+			<li><a href="<?php echo home_url()?>">Home</a></li>
+				<?php
+					$breadcrumbs = get_post_ancestors($post->ID);				
+					if($breadcrumbs)
+					{
+						$breadcrumbs = array_reverse($breadcrumbs);
+						foreach ($breadcrumbs as $crumb)
+						{
+							?>
+							<li><a href="<?php echo get_permalink($crumb); ?>"><?php echo get_the_title($crumb); ?></a></li>
+							<?php
+						}
+					}				
+				?>
+				
+				<?php 
+					if(function_exists("pmpro_getOption") && is_page( array(pmpro_getOption('cancel_page_id'), pmpro_getOption('billing_page_id'), pmpro_getOption('confirmation_page_id'), pmpro_getOption('invoice_page_id') ) ) ) 
+					{ 
+						?>
+						<li><a href="<?php get_permalink(pmpro_getOption('account_page_id')); ?>"><?php echo get_the_title(pmpro_getOption('account_page_id')); ?></a></li>
+						<?php 
+					} 
+				?>
+				<li class="active"><?php the_title(); ?></li>
+              </ul></nav>
+			<?php
+		}
+		elseif(((is_author() || is_tag() || is_archive())) && '' != $archive_breadcrumbs)
+		{
+		?>
+		<nav class="memberlite-breadcrumb" itemprop="breadcrumb"><ul class="menu">
+          	<li><a href="<?php echo get_option('home'); ?>/">Home</a></li>
+			<?php 
+				if(get_option('page_for_posts'))
+				{
+					?>
+					<li><a href="<?php echo get_permalink(get_option('page_for_posts')); ?>"><?php echo get_the_title(get_option('page_for_posts')); ?></a></li>
+					<?php
+				}
+			?>
+			<li class="active">
+			<?php 
+				if ( is_category() ) :
+					single_cat_title();
+	
+				elseif ( is_tag() ) :
+					$current_tag = single_tag_title("", false);
+					printf( __( 'Posts Tagged: %s', 'memberlite' ), '<span>' . $current_tag . '</span>' );
+	
+				elseif ( is_author() ) :
+					printf( __( 'Author: %s', 'memberlite' ), '<span class="vcard">' . get_the_author() . '</span>' );
+	
+				elseif ( is_day() ) :
+					printf( __( 'Day: %s', 'memberlite' ), '<span>' . get_the_date() . '</span>' );
+	
+				elseif ( is_month() ) :
+					printf( __( 'Month: %s', 'memberlite' ), '<span>' . get_the_date( _x( 'F Y', 'monthly archives date format', 'memberlite' ) ) . '</span>' );
+	
+				elseif ( is_year() ) :
+					printf( __( 'Year: %s', 'memberlite' ), '<span>' . get_the_date( _x( 'Y', 'yearly archives date format', 'memberlite' ) ) . '</span>' );
+	
+				elseif ( is_tax( 'post_format', 'post-format-aside' ) ) :
+					_e( 'Asides', 'memberlite' );
+	
+				elseif ( is_tax( 'post_format', 'post-format-gallery' ) ) :
+					_e( 'Galleries', 'memberlite' );
+	
+				elseif ( is_tax( 'post_format', 'post-format-image' ) ) :
+					_e( 'Images', 'memberlite' );
+	
+				elseif ( is_tax( 'post_format', 'post-format-video' ) ) :
+					_e( 'Videos', 'memberlite' );
+	
+				elseif ( is_tax( 'post_format', 'post-format-quote' ) ) :
+					_e( 'Quotes', 'memberlite' );
+	
+				elseif ( is_tax( 'post_format', 'post-format-link' ) ) :
+					_e( 'Links', 'memberlite' );
+	
+				elseif ( is_tax( 'post_format', 'post-format-status' ) ) :
+					_e( 'Statuses', 'memberlite' );
+	
+				elseif ( is_tax( 'post_format', 'post-format-audio' ) ) :
+					_e( 'Audios', 'memberlite' );
+	
+				elseif ( is_tax( 'post_format', 'post-format-chat' ) ) :
+					_e( 'Chats', 'memberlite' );
+	
+				elseif (bbp_is_forum_archive()) :
+					_e( 'Forums', 'memberlite');
+					
+				else :
+					_e( 'Archives', 'memberlite' );
+	
+				endif;
+			?>
+			</li>	
+		</ul></nav>
+		<?php
+		}
+		elseif(is_single() && '' != $post_breadcrumbs)
+		{
+		?>
+		<nav class="memberlite-breadcrumb" itemprop="breadcrumb"><ul class="menu">
+          	<li><a href="<?php echo get_option('home'); ?>/">Home</a></li>
+			<?php 
+				if(get_option('page_for_posts'))
+				{
+					?>
+					<li><a href="<?php echo get_permalink(get_option('page_for_posts')); ?>"><?php echo get_the_title(get_option('page_for_posts')); ?></a></li>
+					<?php
+				}
+			?>
+			<li class="active"><?php the_title(); ?></li>
+		</ul></nav>
+		<?php
+		}
+		elseif(is_search() && '' != $search_breadcrumbs)
+		{
+			global $s;
+		?>
+		<nav class="memberlite-breadcrumb" itemprop="breadcrumb"><ul class="menu">
+          	<li><a href="<?php echo get_option('home'); ?>/">Home</a></li>
+			<?php 
+				if(get_option('page_for_posts'))
+				{
+					?>
+					<li><a href="<?php echo get_permalink(get_option('page_for_posts')); ?>"><?php echo get_the_title(get_option('page_for_posts')); ?></a></li>
+					<?php
+				}
+			?>
+			<li class="active">Search Results For '<?=stripslashes($s)?>'</li>
+		</ul></nav>
+	<?php
+		}
+	}
 }
